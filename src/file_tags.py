@@ -14,7 +14,7 @@ The tags are stored in file names. Here are the characteristics of this approach
      * Very simple.
      * No possibility of tags getting lost - they're always attached to the file.
      * Can be manually edited without needing special tools or knowledge.
-     * Standard UNIX tools work great, i.e. grep.
+     * Standard UNIX tools work great, e.g. grep.
 
 Example file name without tags:
   * 'Picture 002.jpg'
