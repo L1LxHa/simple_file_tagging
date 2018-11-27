@@ -1,4 +1,4 @@
-## Simple file tagging.
+## Simple file tagging
 
 The tags are stored in file names. Here are the characteristics of this approach:
   * Cons:
@@ -14,5 +14,6 @@ The tags are stored in file names. Here are the characteristics of this approach
 
 Example file name without tags:
   * 'Picture 002.jpg'
+
 And with:
   * 'Picture 002 #flowers #flying-whales #wallpaper.jpg'
