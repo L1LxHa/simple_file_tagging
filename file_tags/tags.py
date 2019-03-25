@@ -208,10 +208,8 @@ class TaggedFile:
             return set()
         tags = set()
         for tag_name in tag_names:
-            try:
+            with contextlib.suppress(exception.Error):
                 tags.add(Tag(tag_name))
-            except exception.Error as err:
-                continue
         return tags
 
 
