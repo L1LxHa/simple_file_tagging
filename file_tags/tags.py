@@ -188,7 +188,7 @@ class TaggedFile:
                 "\n [1]: '{}'"
                 "\n [2]: '{}'"
                 "\n [3]: '{}'".format(
-                    TAG_START_CHAR, file_name, util.fmt_generic_err(err)
+                    TAG_START_CHAR, file_name, util.fmt_err(err)
                 )
             )
         except exception.MatchFailedError:
@@ -205,7 +205,7 @@ class TaggedFile:
         try:
             tag_names = re.findall(TAG_REGEX, file_name)
         except exception.InvalidRegexError as err:
-            raise exception.Error(err_template.format(util.fmt_generic_err(err)))
+            raise exception.Error(err_template.format(util.fmt_err(err)))
         except exception.MatchFailedError:
             return set()
         tags = set()
@@ -278,7 +278,7 @@ class Config:
             file_paths = util.validated_paths(parsed.file_paths)
             tags = {Tag(tag) for tag in parsed.tags.split(",")}
         except exception.Error as err:
-            log.error(util.fmt_internal_err(err))
+            log.error(util.fmt_err(err))
             sys.exit(1)
 
         return cls(
@@ -299,10 +299,10 @@ def run(command_line_args: List) -> None:
         log.info("Interrupted by the user, exiting ...")
         sys.exit(130)
     except exception.Error as err:
-        log.error(util.fmt_internal_err(err))
+        log.error(util.fmt_err(err))
         sys.exit(1)
     except Exception as err:
-        log.critical(util.fmt_generic_err(err), exc_info=True)
+        log.critical(util.fmt_err(err), exc_info=True)
         sys.exit(1)
 
 
@@ -341,7 +341,7 @@ def main(config: Config) -> None:
     try:
         rename_files(changed_tagged_files)
     except exception.Error as err:
-        log.error(util.fmt_internal_err(err))
+        log.error(util.fmt_err(err))
         log.error("Exiting ... (failed to rename a file, please retry)")
         sys.exit(1)
     log.info("Files successfully renamed.")
@@ -385,7 +385,7 @@ def rename_files(tagged_files: Set[TaggedFile]) -> None:
                 "\n [1]: '{}'".format(
                     len(renamed_files) + 1,
                     len(tagged_files),
-                    util.fmt_internal_err(err),
+                    util.fmt_err(err),
                 )
             )
         else:

@@ -111,12 +111,11 @@ class ColoredLoggingStreamHandler(logging.StreamHandler):
         return message
 
 
-def fmt_generic_err(err) -> str:
-    return "[{err}] {msg}".format(err=err.__class__.__qualname__, msg=err)
-
-
-def fmt_internal_err(err) -> str:
-    return textwrap.indent(fmt_generic_err(err), prefix=" " * 6).strip()
+def fmt_err(err) -> str:
+    basic_fmt = "[{err}] {msg}".format(err=err.__class__.__qualname__, msg=err)
+    if isinstance(err, exception.Error):
+        return textwrap.indent(basic_fmt, prefix=" " * 6).strip()
+    return basic_fmt
 
 
 def get_file_extension(file_path: str) -> str:
