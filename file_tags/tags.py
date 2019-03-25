@@ -187,9 +187,7 @@ class TaggedFile:
                 "from file name [2]: [3]."
                 "\n [1]: '{}'"
                 "\n [2]: '{}'"
-                "\n [3]: '{}'".format(
-                    TAG_START_CHAR, file_name, util.fmt_err(err)
-                )
+                "\n [3]: '{}'".format(TAG_START_CHAR, file_name, util.fmt_err(err))
             )
         except exception.MatchFailedError:
             pass
@@ -383,9 +381,7 @@ def rename_files(tagged_files: Set[TaggedFile]) -> None:
             raise exception.Error(
                 "While renaming file {}/{}: [1]."
                 "\n [1]: '{}'".format(
-                    len(renamed_files) + 1,
-                    len(tagged_files),
-                    util.fmt_err(err),
+                    len(renamed_files) + 1, len(tagged_files), util.fmt_err(err)
                 )
             )
         else:
