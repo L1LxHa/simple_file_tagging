@@ -23,18 +23,14 @@ And with:
 """
 
 import argparse
-import collections
 import contextlib
-import datetime
 import functools
-import json
 import logging
 import os
 import random
 import re
 import sys
 import textwrap
-import time
 from typing import *
 
 from file_tags import exception
