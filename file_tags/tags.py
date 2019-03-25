@@ -22,6 +22,8 @@ And with:
   * 'Picture 002 #flowers #flying-whales #wallpaper.jpg'
 """
 
+# pylint: disable=unused-wildcard-import
+from typing import *
 import argparse
 import contextlib
 import functools
@@ -31,7 +33,6 @@ import random
 import re
 import sys
 import textwrap
-from typing import *
 
 from file_tags import exception
 from file_tags import util

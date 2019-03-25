@@ -1,9 +1,11 @@
+# pylint: disable=unused-wildcard-import
+from typing import *
+
 import logging.handlers
 import os
 import re
 import textwrap
 import time
-from typing import *
 
 from file_tags import exception
 
