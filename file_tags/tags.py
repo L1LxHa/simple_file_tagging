@@ -123,8 +123,8 @@ class TaggedFile:
     def __init__(self, path: str) -> None:
         self.path = path
         self.name = os.path.basename(self.path)
-        self.tags = self.parsed_tags(self.name)
-        self.tagless_name = self.parsed_tagless_name(self.name)
+        self.tags = self.parse_tags(self.name)
+        self.tagless_name = self.parse_tagless_name(self.name)
 
     def __str__(self) -> str:
         return str(
@@ -178,7 +178,7 @@ class TaggedFile:
     def remove_tag(self, tag: Tag) -> None:
         self.tags.discard(tag)
 
-    def parsed_tagless_name(self, file_name: str) -> str:
+    def parse_tagless_name(self, file_name: str) -> str:
         try:
             file_name = re.sub(TAG_REGEX, "", file_name)
         except exception.InvalidRegexError as err:
@@ -195,7 +195,7 @@ class TaggedFile:
             pass
         return util.trim_repeating_whitespace(file_name).strip()
 
-    def parsed_tags(self, file_name: str) -> Set:
+    def parse_tags(self, file_name: str) -> Set:
         err_template = (
             "While parsing tags starting with [1] from file name [2]: [3]."
             "\n [1]: '{}'"
@@ -275,7 +275,7 @@ class Config:
         parsed = parser.parse_args(command_line_args)
 
         try:
-            file_paths = util.validated_paths(parsed.file_paths)
+            file_paths = util.validate_paths(parsed.file_paths)
             tags = {Tag(tag) for tag in parsed.tags.split(",")}
         except exception.Error as err:
             log.error(util.fmt_err(err))

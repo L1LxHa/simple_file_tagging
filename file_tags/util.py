@@ -21,11 +21,11 @@ log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
 
 
-def validated_paths(paths: List[str]) -> List[str]:
+def validate_paths(paths: List[str]) -> List[str]:
     out_paths = []
     err_paths = []
     for path in paths:
-        path = normalized_path(path)
+        path = normalize_path(path)
         if not os.path.exists(path):
             err_paths.append(path)
             continue
@@ -44,11 +44,11 @@ def validated_paths(paths: List[str]) -> List[str]:
     return out_paths
 
 
-def sanitized_file_name(file_name: str) -> str:
+def sanitize_file_name(file_name: str) -> str:
     return "".join(char for char in file_name if char.isalnum() or char in "-. ")
 
 
-def normalized_path(path: str) -> str:
+def normalize_path(path: str) -> str:
     return os.path.normpath(os.path.abspath(os.path.expanduser(path)))
 
 
