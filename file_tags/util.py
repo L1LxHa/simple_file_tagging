@@ -14,7 +14,7 @@ import textwrap
 import time
 from typing import *
 
-import exception
+from file_tags import exception
 
 
 log = logging.getLogger(__name__)

@@ -37,8 +37,8 @@ import textwrap
 import time
 from typing import *
 
-import exception
-import util
+from file_tags import exception
+from file_tags import util
 
 
 VERSION = "0.0.1 2018-11-10"
