@@ -120,4 +120,46 @@ def get_file_name_no_extension(file_path: str) -> str:
 
 
 def trim_repeating_whitespace(text: str) -> str:
-    return re.sub(r"(\s)\s+?(?=\S)", r"\1", text)
+    """
+    Remove consecutive repeats of whitespace from `text`.
+
+    Examples:
+        f(" " * 3) -> " "
+        f(" 1  1 ") -> " 1 1 "
+    """
+    output = []
+    previous_text_char = ""
+    for text_char in text:
+        if text_char.isspace() and text_char == previous_text_char:
+            continue
+        output.append(text_char)
+        previous_text_char = text_char
+    return "".join(output)
+
+
+def trim_repeating_character(char: str, text: str) -> str:
+    """
+    Remove consecutive repeats of character `char` from `text`.
+
+    Examples:
+        f("A", "AAA") -> "A"
+        f("1", "ab111ab1" -> "ab1ab1"
+
+    Raises:
+        ValueError when the value of `char` is not a single character.
+    """
+
+    if len(char) != 1:
+        raise ValueError(
+            "Invalid value of parameter 'char': expected a single character string, got: '{}'".format(
+                char
+            )
+        )
+    output = []
+    previous_text_char = ""
+    for text_char in text:
+        if text_char == char and text_char == previous_text_char:
+            continue
+        output.append(text_char)
+        previous_text_char = text_char
+    return "".join(output)

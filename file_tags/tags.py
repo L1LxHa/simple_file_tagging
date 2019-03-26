@@ -41,7 +41,8 @@ from file_tags import util
 VERSION = "0.0.1 2018-11-10"
 TAG_START_CHAR = "#"
 TAG_WORD_SEP = "-"
-TAG_REGEX = r"({0}[a-z0-9-]+)".format(TAG_START_CHAR)
+TAG_REGEX = r"(?i)(?:^|\s)({0}[a-z0-9-]+)".format(TAG_START_CHAR)
+COMMON_SEPARATORS = {"-", "_", ".", " "}
 
 
 log = logging.getLogger()
@@ -77,7 +78,7 @@ class TagAction:
 @functools.total_ordering
 class Tag:
     def __init__(self, name: str) -> None:
-        self.name = self.normalize_name(name)
+        self.name = self._normalize_name(name)
         self.value = TAG_START_CHAR + self.name
 
     def __str__(self) -> str:
@@ -97,31 +98,38 @@ class Tag:
     def __gt__(self, other) -> bool:
         if not isinstance(other, self.__class__):
             raise NotImplementedError
-        return ord(self.name[0]) > ord(other.name[0])
+        return self.name == sorted([self.name, other.name])[1]
 
-    def normalize_name(self, name: str) -> str:
-        normalized_name = name.lower().strip()
-        common_separators = {"-", "_", ".", " "}
-        for common_separator in common_separators:
+    @staticmethod
+    def _normalize_name(name: str) -> str:
+        normalized_name = name.strip()
+        for common_separator in COMMON_SEPARATORS:
             normalized_name = normalized_name.replace(common_separator, TAG_WORD_SEP)
-        normalized_name = "".join(
-            char for char in normalized_name if char.isalnum() or char == TAG_WORD_SEP
+        normalized_name = (
+            "".join(
+                char
+                for char in normalized_name
+                if char.isalnum() or char == TAG_WORD_SEP
+            )
+            .strip(TAG_WORD_SEP)
+            .strip()
         )
+        normalized_name = util.trim_repeating_character(TAG_WORD_SEP, normalized_name)
         if not normalized_name:
             raise exception.Error(
                 "While normalizing tag name [1]: [2]."
                 "\n [1]: '{}'"
                 "\n [2]: 'Post-normalization name is empty.'".format(name)
             )
-        return normalized_name.strip()
+        return normalized_name
 
 
 class TaggedFile:
     def __init__(self, path: str) -> None:
         self.path = path
         self.name = os.path.basename(self.path)
-        self.tags = self.parse_tags(self.name)
-        self.tagless_name = self.parse_tagless_name(self.name)
+        self.tagless_name = self._tagless_name_from_file_name(self.name)
+        self.tags = self._tags_from_file_name(self.name)
 
     def __str__(self) -> str:
         return str(
@@ -137,12 +145,11 @@ class TaggedFile:
     @property
     def new_name(self) -> str:
         # fmt: off
-        name = util.trim_repeating_whitespace(
-            "{name}{tags}".format(
-                name=util.get_file_name_no_extension(self.tagless_name),
-                tags=" {}".format(" ".join(tag.value for tag in sorted(self.tags)))
-                    if self.tags else "",
-            )
+        name = "{name}{tags}".format(
+             name=util.get_file_name_no_extension(self.tagless_name),
+             tags=" {}".format(
+                 " ".join(tag.value for tag in sorted(self.tags))
+             ) if self.tags else "",
         ).strip()
         # fmt: on
         extension = util.get_file_extension(self.tagless_name)
@@ -152,7 +159,9 @@ class TaggedFile:
 
     @property
     def new_path(self) -> str:
-        return os.path.join(os.path.dirname(self.path), self.new_name)
+        return util.normalize_path(
+            os.path.join(os.path.dirname(self.path), self.new_name)
+        )
 
     def write(self) -> None:
         current_path = self.path
@@ -175,7 +184,8 @@ class TaggedFile:
     def remove_tag(self, tag: Tag) -> None:
         self.tags.discard(tag)
 
-    def parse_tagless_name(self, file_name: str) -> str:
+    @staticmethod
+    def _tagless_name_from_file_name(file_name: str) -> str:
         try:
             file_name = re.sub(TAG_REGEX, "", file_name)
         except exception.InvalidRegexError as err:
@@ -188,9 +198,10 @@ class TaggedFile:
             )
         except exception.MatchFailedError:
             pass
-        return util.trim_repeating_whitespace(file_name).strip()
+        return file_name.strip()
 
-    def parse_tags(self, file_name: str) -> Set:
+    @staticmethod
+    def _tags_from_file_name(file_name: str) -> Set:
         err_template = (
             "While parsing tags starting with [1] from file name [2]: [3]."
             "\n [1]: '{}'"
